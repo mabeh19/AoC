@@ -10,17 +10,6 @@ foreign {
         strtoll :: proc(cstring, ^cstring, int) -> int ---
 }
 
-read_input :: proc() -> string {
-        fd, _ := os.open("input.txt")
-        f_inp, _ := os.read_entire_file(fd)
-        return string(f_inp)
-}
-
-read_test :: proc() -> string {
-        fd, _ := os.open("test.txt")
-        f_inp, _ := os.read_entire_file(fd)
-        return string(f_inp)
-}
 
 lines :: proc(str: string) -> []string {
         return strings.split(str, "\n")

@@ -26,7 +26,7 @@ Race :: struct {
 }
 
 main :: proc() {
-        input := aoc.read_input()
+        input := string(#load("input.txt"))
 
         race := parse_file(input)
         winner, dist := do_race(&race, 2503)
@@ -122,8 +122,8 @@ switch_action :: proc(racer: ^Racer) {
 
 @test
 examples :: proc(t: ^testing.T) {
-        input := aoc.read_test()
-        
+        input := string(#load("test.txt"))
+
         race := parse_file(input)
         winner, dist := do_race(&race, 1000)
         fmt.println(winner, ": ", dist)
