@@ -8,17 +8,18 @@ import "core:fmt"
 import "core:strings"
 import "core:strconv"
 import "core:math"
+import "core:unicode"
 import "core:testing"
 
 import aoc "../.."
 
 main :: proc() {
-    input := aoc.read_input() 
+    input := #load("input.txt", string)
 }
 
 @test
 examples :: proc(t: ^testing.T) {
-    input := aoc.read_test()
+    input := #load("test.txt", string)
 }
 '
 
