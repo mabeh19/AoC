@@ -5,6 +5,7 @@ import "core:strings"
 import "core:strconv"
 import "core:math"
 import "core:unicode"
+import "core:time"
 import "core:testing"
 
 import aoc "../.."
@@ -16,15 +17,23 @@ Card :: struct {
         count:                  int,
 }
 
-Game :: [300]Card
+Game :: [210]Card
 
 
 main :: proc() {
         input := #load("input.txt", string)
+        s := time.now()
         game := parse_game(input)
-        defer free(game)
-        //fmt.println(solve1(game))
-        fmt.println(solve2(game))
+        ans := solve1(game)
+        e := time.now()
+        free(game)
+        fmt.println("P1:", ans, "Time:", time.diff(s, e))
+        s = time.now()
+        game = parse_game(input)
+        ans = solve2(game)
+        e = time.now()
+        free(game)
+        fmt.println("P2:", ans, "Time:", time.diff(s, e)) 
 }
 
 parse_game :: proc(str: string) -> ^Game {
@@ -61,14 +70,12 @@ solve2 :: proc(game: ^Game) -> int {
         total := 0
         for card, id in game {
                 points := get_points_linear(card.winning_numbers, card.own_numbers)
-                for _ in 0 ..< card.count {
-                        for n in 1 ..= points {
-                                c := game[id + n]
-                                c.count += 1
-                                game[id + n] = c
-                        }
-                        total += 1
+                for n in 1 ..= points {
+                        c := game[id + n]
+                        c.count += card.count
+                        game[id + n] = c
                 }
+                total += card.count
         }
         return total
 }
