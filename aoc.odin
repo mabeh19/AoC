@@ -15,7 +15,6 @@ lines :: proc(str: string) -> []string {
         return strings.split(str, "\n")
 }
 
-
 words :: proc(str: string) -> []string {
         return strings.split(str, " ")
 }
@@ -26,6 +25,17 @@ get_int :: proc(str: string) -> int {
 
 get_f32 :: proc(str: string) -> f32 {
         return f32(strconv.atof(str))
+}
+
+words2int :: proc(str: string) -> []int {
+        ints := [dynamic]int{}
+        words := words(str)
+        defer delete(words)
+        for word in words {
+                if len(word) < 1 do continue
+                append(&ints, get_int(word))
+        }
+        return ints[:]
 }
 
 copy_map :: proc(m: map[$T1]$T2) -> map[T1]T2 {

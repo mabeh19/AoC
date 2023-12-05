@@ -14,12 +14,12 @@ import "core:testing"
 import aoc "../.."
 
 main :: proc() {
-    input := #load("input.txt", string)
+        input := #load("input.txt", string)
 }
 
 @test
 examples :: proc(t: ^testing.T) {
-    input := #load("test.txt", string)
+        input := #load("test.txt", string)
 }
 '
 
