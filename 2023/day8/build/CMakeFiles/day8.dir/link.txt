@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/day8.dir/src/day8.cpp.o -o day8  /usr/lib/libfmt.so 
