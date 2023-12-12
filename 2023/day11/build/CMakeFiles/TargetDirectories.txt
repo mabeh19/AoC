@@ -1,0 +1,3 @@
+/home/mathias/Documents/AoC/2023/day11/build/CMakeFiles/day11.dir
+/home/mathias/Documents/AoC/2023/day11/build/CMakeFiles/edit_cache.dir
+/home/mathias/Documents/AoC/2023/day11/build/CMakeFiles/rebuild_cache.dir

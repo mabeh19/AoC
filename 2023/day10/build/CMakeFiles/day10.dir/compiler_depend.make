@@ -95,7 +95,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/bits/cpp_type_traits.h \
   /usr/include/c++/13.2.1/bits/cxxabi_forced.h \
   /usr/include/c++/13.2.1/bits/cxxabi_init_exception.h \
-  /usr/include/c++/13.2.1/bits/enable_special_members.h \
   /usr/include/c++/13.2.1/bits/erase_if.h \
   /usr/include/c++/13.2.1/bits/exception.h \
   /usr/include/c++/13.2.1/bits/exception_defines.h \
@@ -104,8 +103,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/bits/functexcept.h \
   /usr/include/c++/13.2.1/bits/functional_hash.h \
   /usr/include/c++/13.2.1/bits/hash_bytes.h \
-  /usr/include/c++/13.2.1/bits/hashtable.h \
-  /usr/include/c++/13.2.1/bits/hashtable_policy.h \
   /usr/include/c++/13.2.1/bits/invoke.h \
   /usr/include/c++/13.2.1/bits/ios_base.h \
   /usr/include/c++/13.2.1/bits/istream.tcc \
@@ -141,9 +138,12 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/bits/stl_iterator.h \
   /usr/include/c++/13.2.1/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13.2.1/bits/stl_iterator_base_types.h \
+  /usr/include/c++/13.2.1/bits/stl_map.h \
+  /usr/include/c++/13.2.1/bits/stl_multimap.h \
   /usr/include/c++/13.2.1/bits/stl_pair.h \
   /usr/include/c++/13.2.1/bits/stl_raw_storage_iter.h \
   /usr/include/c++/13.2.1/bits/stl_tempbuf.h \
+  /usr/include/c++/13.2.1/bits/stl_tree.h \
   /usr/include/c++/13.2.1/bits/stl_uninitialized.h \
   /usr/include/c++/13.2.1/bits/stl_vector.h \
   /usr/include/c++/13.2.1/bits/stream_iterator.h \
@@ -152,7 +152,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/bits/string_view.tcc \
   /usr/include/c++/13.2.1/bits/stringfwd.h \
   /usr/include/c++/13.2.1/bits/unique_ptr.h \
-  /usr/include/c++/13.2.1/bits/unordered_set.h \
   /usr/include/c++/13.2.1/bits/uses_allocator.h \
   /usr/include/c++/13.2.1/bits/uses_allocator_args.h \
   /usr/include/c++/13.2.1/bits/utility.h \
@@ -185,6 +184,7 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/istream \
   /usr/include/c++/13.2.1/iterator \
   /usr/include/c++/13.2.1/limits \
+  /usr/include/c++/13.2.1/map \
   /usr/include/c++/13.2.1/memory \
   /usr/include/c++/13.2.1/new \
   /usr/include/c++/13.2.1/ostream \
@@ -212,7 +212,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
   /usr/include/c++/13.2.1/tuple \
   /usr/include/c++/13.2.1/type_traits \
   /usr/include/c++/13.2.1/typeinfo \
-  /usr/include/c++/13.2.1/unordered_set \
   /usr/include/c++/13.2.1/vector \
   /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/atomic_word.h \
   /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
@@ -336,8 +335,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/c++/13.2.1/pstl/pstl_config.h:
 
-/usr/include/c++/13.2.1/pstl/glue_memory_defs.h:
-
 /usr/include/c++/13.2.1/ostream:
 
 /usr/include/c++/13.2.1/new:
@@ -376,13 +373,15 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/c++/13.2.1/cctype:
 
-/usr/include/c++/13.2.1/bits/unordered_set.h:
-
 /usr/include/c++/13.2.1/bits/stringfwd.h:
 
 /usr/include/c++/13.2.1/bits/stl_tempbuf.h:
 
 /usr/include/c++/13.2.1/bits/stl_pair.h:
+
+/usr/include/c++/13.2.1/pstl/glue_memory_defs.h:
+
+/usr/include/c++/13.2.1/bits/stl_map.h:
 
 /usr/include/c++/13.2.1/bits/stl_function.h:
 
@@ -399,12 +398,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/c++/13.2.1/bits/stl_algobase.h:
 
 /usr/include/c++/13.2.1/bits/specfun.h:
-
-/usr/include/c++/13.2.1/bits/shared_ptr_base.h:
-
-/usr/include/c++/13.2.1/ext/type_traits.h:
-
-/usr/include/c++/13.2.1/bits/shared_ptr_atomic.h:
 
 /usr/include/c++/13.2.1/bits/exception_defines.h:
 
@@ -492,6 +485,8 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/bits/struct_mutex.h:
 
+/usr/include/bits/cpu-set.h:
+
 /usr/include/c++/13.2.1/cstring:
 
 /usr/include/c++/13.2.1/bits/vector.tcc:
@@ -570,6 +565,8 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/asm-generic/errno-base.h:
 
+/usr/include/c++/13.2.1/map:
+
 /usr/include/c++/13.2.1/bits/utility.h:
 
 /usr/include/c++/13.2.1/backward/auto_ptr.h:
@@ -592,9 +589,9 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/c++/13.2.1/bits/ios_base.h:
 
-/usr/include/c++/13.2.1/bits/shared_ptr.h:
+/usr/include/asm-generic/errno.h:
 
-/usr/include/bits/long-double.h:
+/usr/include/bits/fp-logb.h:
 
 /usr/include/wctype.h:
 
@@ -611,6 +608,10 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/bits/libc-header-start.h:
 
 /usr/include/c++/13.2.1/stdexcept:
+
+/usr/include/c++/13.2.1/bits/stl_tree.h:
+
+/usr/include/c++/13.2.1/bits/stl_multimap.h:
 
 /usr/include/bits/mathcalls-narrow.h:
 
@@ -631,6 +632,10 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/ctype.h:
 
 /usr/include/bits/waitflags.h:
+
+/usr/include/c++/13.2.1/ext/type_traits.h:
+
+/usr/include/c++/13.2.1/bits/shared_ptr_atomic.h:
 
 /usr/include/bits/types/struct_timespec.h:
 
@@ -653,6 +658,8 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/bits/wctype-wchar.h:
 
 /usr/include/bits/wordsize.h:
+
+/usr/include/c++/13.2.1/bits/shared_ptr_base.h:
 
 /usr/include/c++/13.2.1/bit:
 
@@ -690,10 +697,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/c++/13.2.1/bits/cxxabi_forced.h:
 
-/usr/include/bits/cpu-set.h:
-
-/usr/include/c++/13.2.1/bits/enable_special_members.h:
-
 /usr/include/c++/13.2.1/bits/streambuf_iterator.h:
 
 /usr/include/c++/13.2.1/bits/stl_iterator_base_funcs.h:
@@ -705,8 +708,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/c++/13.2.1/cstddef:
 
 /usr/include/c++/13.2.1/bits/ptr_traits.h:
-
-/usr/include/c++/13.2.1/unordered_set:
 
 /usr/include/c++/13.2.1/bits/exception_ptr.h:
 
@@ -723,12 +724,6 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 /usr/include/linux/errno.h:
 
 /usr/include/c++/13.2.1/bits/hash_bytes.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/bits/fp-logb.h:
-
-/usr/include/c++/13.2.1/bits/hashtable_policy.h:
 
 /usr/include/c++/13.2.1/bits/locale_classes.h:
 
@@ -766,10 +761,12 @@ CMakeFiles/day10.dir/src/day10.cpp.o: /home/mathias/Documents/AoC/2023/day10/src
 
 /usr/include/c++/13.2.1/bits/sstream.tcc:
 
-/usr/include/c++/13.2.1/bits/hashtable.h:
-
 /usr/include/bits/wchar.h:
 
 /usr/include/c++/13.2.1/bits/predefined_ops.h:
 
 /usr/include/c++/13.2.1/bits/requires_hosted.h:
+
+/usr/include/bits/long-double.h:
+
+/usr/include/c++/13.2.1/bits/shared_ptr.h:
