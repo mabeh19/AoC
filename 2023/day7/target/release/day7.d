@@ -1,1 +1,0 @@
-/home/mathias/Documents/AoC/2023/day7/target/release/day7: /home/mathias/Documents/AoC/2023/day7/input.txt /home/mathias/Documents/AoC/2023/day7/src/main.rs /home/mathias/Documents/AoC/2023/day7/test.txt
