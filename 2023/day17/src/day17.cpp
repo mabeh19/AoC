@@ -2,7 +2,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <stack>
+#include <algorithm>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
@@ -27,6 +27,11 @@ enum Direction {
     Up, Down, Left, Right
 };
 
+struct Vector {
+    Point p;
+    Direction d;
+};
+
 Grid parse(std::stringstream &ss)
 {
     Grid g;
@@ -39,15 +44,15 @@ Grid parse(std::stringstream &ss)
     return g;
 }
 
-std::vector<std::tuple<Point, Direction>> get_next_pos(const Grid &g, Point pos, Direction d, std::vector<std::tuple<Point, Direction>> path)
+std::vector<Vector> get_next_pos(const Grid &g, Point pos, Direction d, const std::vector<Vector> &path)
 {
-static const std::tuple<Point, Direction> delta_pos[4][3] = {
+static const Vector delta_pos[4][3] = {
     {{{1,0}, Right},    {{0,-1}, Up},       {{-1,0}, Left}},
     {{{1,0}, Right},    {{0,1},  Down},     {{-1,0}, Left}},
     {{{0,1}, Down},     {{-1,0}, Left},     {{0,-1}, Up}},
     {{{0,1}, Down},     {{1,0},  Right},    {{0,-1}, Up}},
 };
-    std::vector<std::tuple<Point, Direction>> ps;
+    std::vector<Vector> ps;
     bool skip_straight = [&] {
         bool ok = true;
         for (auto p = path.end() - 3; p != path.end(); p++) {
@@ -67,7 +72,7 @@ static const std::tuple<Point, Direction> delta_pos[4][3] = {
     return ps;
 }
 
-bool visited(Point pos, const std::vector<std::tuple<Point, Direction>> &path)
+bool visited(Point pos, const std::vector<Vector> &path)
 {
     bool v = false;
     for (auto [p, d] : path)
@@ -75,33 +80,54 @@ bool visited(Point pos, const std::vector<std::tuple<Point, Direction>> &path)
     return v;
 }
 
-void search(const Grid &g, Point pos, Direction d, std::vector<std::tuple<Point, Direction>> &path)
+void search(const Grid &g, Point pos, Direction d, std::vector<Vector> &path)
 {
-    path.push_back(std::tuple<Point, Direction>(pos, d));
+    path.push_back(Vector{pos, d});
     auto end = Point {(ll)g[0].size() - 1, (ll)g.size() - 1};
     if (pos == end) return;
     auto choices = get_next_pos(g, pos, d, path);
-    auto [best, best_d] = [&] {
-        ll lowest = INT64_MAX;
-        Point lp;
-        Direction bd;
-        for (auto [cp, cd] : choices) {
-            if (visited(cp, path)) continue;
-            ll val = g[cp.y][cp.x] - '0';
-            if (val < lowest) {
-                lp = cp;
-                bd = cd;
-                lowest = val;
-            }
-        }
-        return std::tuple<Point, Direction>({lp, bd});
-    }();
-    fmt::println("Best: [{},{}], heading {}", best.x, best.y, (ll)best_d);
+    std::sort(choices.begin(), choices.end(), [&](Vector v1, Vector v2) {
+        auto dist1 = (std::abs(end.x - v1.p.x) + std::abs(end.y - v1.p.y));
+        auto dist2 = (std::abs(end.x - v2.p.x) + std::abs(end.y - v2.p.y));
+        return dist1 < dist2;
+    });
+    //auto [best, best_d] = [&] {
+    //    ll lowest = INT64_MAX;
+    //    Point lp;
+    //    Direction bd;
+    //    for (auto [cp, cd] : choices) {
+    //        if (visited(cp, path)) continue;
+    //        ll val = g[cp.y][cp.x] - '0';
+    //        if (val < lowest) {
+    //            lp = cp;
+    //            bd = cd;
+    //            lowest = val;
+    //        }
+    //    }
+
+    //    if (lowest == INT64_MAX) {
+    //        lp = Point { -1, -1 };
+    //        bd = (Direction)-1;
+    //    }
+
+    //    return Vector({lp, bd});
+    //}();
+    //fmt::println("Best: [{},{}], heading {}", best.x, best.y, (ll)best_d);
+
+    //if (best_d == (Direction)-1 && best == Point {-1, -1}) {
+    //    path.pop_back();
+    //    return;
+    //}
+
+    for (auto &[cp, cd] : choices)
+        search(g, cp, cd, path);
+
+    path.pop_back();
 }
 
 ll solve1(const Grid &g)
 {
-    std::vector<std::tuple<Point, Direction>> path;
+    std::vector<Vector> path;
     search(g, Point {0, 0}, Right, path);
     return [&] {
         ll sum = 0;
