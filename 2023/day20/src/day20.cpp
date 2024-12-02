@@ -4,12 +4,14 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 class Module;
 typedef std::unordered_map<std::string, Module*> Modules;
 
 class Module {
-   
+
 
 public:
     std::vector<std::string> dms;
@@ -22,7 +24,7 @@ public:
     Module () {}
     ~Module () {}
 
-    virtual void Send_Signal(const std::string &input, bool pulse) {}
+    virtual void SendSignal(const std::string &input, bool pulse) {}
     virtual void Reset() {}
 
     virtual std::vector<std::string> Propagate()
@@ -33,7 +35,7 @@ public:
                 highs++;
             else
                 lows++;
-            modules->at(s)->Send_Signal(name, pulse);
+            //modules->at(s)->SendSignal(name, pulse);
             vs.push_back(s);
         }
         return vs;
@@ -45,7 +47,7 @@ class FlipFlop : public Module {
 
 
 public:
-    bool lastInput;
+    bool lastInput = false;
 
     FlipFlop(Modules* m, std::string n, std::vector<std::string> ds)
     {
@@ -57,7 +59,7 @@ public:
 
     ~FlipFlop() {}
 
-    virtual void Send_Signal(const std::string &input, bool pulse) override
+    virtual void SendSignal(const std::string &input, bool pulse) override
     {
         lastInput = pulse;
         if (!pulse)
@@ -67,6 +69,9 @@ public:
     virtual void Reset() override
     {
         pulse = false;
+        highs = 0;
+        lows = 0;
+        lastInput = false;
     }
 
     virtual std::vector<std::string> Propagate() override
@@ -78,7 +83,7 @@ public:
                     highs++;
                 else
                     lows++;
-                modules->at(s)->Send_Signal(name, pulse);
+                //modules->at(s)->SendSignal(name, pulse);
                 vs.push_back(s);
             }
         }
@@ -103,10 +108,11 @@ public:
 
     ~Conjunction() {}
 
-    virtual void Send_Signal(const std::string &input, bool pulse) override
+    virtual void SendSignal(const std::string &input, bool pulse) override
     {
         bool out = true;
         inputs[input] = pulse;
+
         for (auto [k,v] : inputs) {
             out = out && v;
         }
@@ -116,6 +122,8 @@ public:
 
     virtual void Reset() override
     {
+        highs = 0;
+        lows = 0;
         for (auto [k,v] : inputs) {
             inputs[k] = false;
         }
@@ -126,7 +134,7 @@ public:
 class Broadcaster : public Module {
 
 public:
-    
+
     Broadcaster(Modules* m, std::string n, std::vector<std::string> ds) 
     { 
         dms = ds;
@@ -137,7 +145,7 @@ public:
 
     ~Broadcaster() {}
 
-    virtual void Send_Signal(const std::string &input, bool pulse) override
+    virtual void SendSignal(const std::string &input, bool pulse) override
     {
         this->pulse = pulse;
     }
@@ -145,6 +153,8 @@ public:
     virtual void Reset() override
     {
         /* empty */
+        highs = 0;
+        lows = 0;
     }
 };
 
@@ -156,6 +166,13 @@ std::vector<std::string> sendSignals(Modules* mods, std::vector<std::string> ms)
         auto m = mods->at(s);
         auto propped_to = m->Propagate();
         new_ms.insert(new_ms.end(), propped_to.begin(), propped_to.end());
+    }
+
+    for (auto &s : ms) {
+        auto m = mods->at(s);
+        for (auto &d : m->dms) {
+            m->SendSignal(d, m->pulse);
+        }
     }
 
     return new_ms;
@@ -172,20 +189,22 @@ size_t prodPulses(const Modules* mods, size_t presses)
         lows += v->lows;
     }
 
+    std::cout << "highs: " << highs << std::endl;
+    std::cout << "lows: " << lows << std::endl;
     return highs * (presses + lows);
 }
 
 
 void runSystem(Modules* mods, size_t iters)
 {
-    auto next = std::vector<std::string>{"broadcaster"};
     for (size_t i = 0; i < iters; i++) {
+        auto next = std::vector<std::string>{"broadcaster"};
         while (next.size()) {
             next = sendSignals(mods, next);
         }
     }
 
-    std::cout << "Total: " <<  prodPulses(mods, iters) << std::endl;
+    std::cout << "Total: " << prodPulses(mods, iters) << std::endl;
 }
 
 void resetSystem(Modules* mods)
@@ -204,29 +223,34 @@ Modules* parseFile(std::stringstream& ss)
         std::string s;
         getline(ss, s);
 
+        if (s.length() == 0) continue;
+
+        char type = s[0];
         std::string name = s.substr(0, s.find(" -> "));
-        std::string dest = s.substr(s.find(" -> ") + 4);
+        std::string dest = s.substr(name.length() + 4);
+
+        std::cout << "Name: " << name << " Dests: " << dest << std::endl;
 
         std::vector<std::string> dests;
         std::stringstream dss(dest);
 
         while (dss.good()) {
             std::string s;
-            getline(ss, s, ',');
+            getline(dss, s, ',');
+            if (s[0] == ' ') s = s.substr(1);
             dests.push_back(s);
         }
 
-        if (name == "broadcaster") {
-            ms->insert({name, new Broadcaster(ms, name, dests)});
-            continue;
-        }
-
-        switch (name[0]) {
+        switch (type) {
         case '%':
-            ms->insert({name, new FlipFlop(ms, name, dests)});
+            ms->insert({name.substr(1), new FlipFlop(ms, name.substr(1), dests)});
             break;
         case '&':
-            ms->insert({name, new Conjunction(ms, name, dests, {})});
+            ms->insert({name.substr(1), new Conjunction(ms, name.substr(1), dests, {})});
+            break;
+        case 'b':
+            ms->insert({name, new Broadcaster(ms, name, dests)});
+            break;
         }
     }
 
@@ -248,7 +272,7 @@ void solve1(const char *path)
     ss << fs.rdbuf();
     auto ms = parseFile(ss);
 
-    runSystem(ms, 1);
+    runSystem(ms, 1000);
 }
 
 
