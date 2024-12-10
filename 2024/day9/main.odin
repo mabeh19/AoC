@@ -2,71 +2,106 @@ package main
 
 import "core:fmt"
 import "core:os"
+import "core:mem/virtual"
+import "core:strings"
 
-File :: distinct int
-Empty :: distinct struct {}
+Block :: struct {
+    size: int,
 
-FileBlock :: union {
-    File,
-    Empty
+    block_type: union {File, Empty}
 }
+
+File :: struct {
+    id: int
+}
+Empty :: distinct struct {}
 
 main :: proc ()
 {
-    file, _ := os.read_entire_file("test.txt")
-    defer delete(file)
+    arena := virtual.Arena{}
+    _ = virtual.arena_init_growing(&arena)
+    context.allocator = virtual.arena_allocator(&arena)
+    file, _ := os.read_entire_file("input.txt")
 
     if file[len(file)-1] == '\n' {
         file = file[:len(file)-1]
     }
 
     fs := parse(file)
-    defer delete(fs)
 
-    insert_idx := 0
     take_idx := len(fs) - 1
 
-    for insert_idx < take_idx {
-        switch f in fs[insert_idx] {
-        case File:
-            insert_idx += 1
-        case Empty:
-            swap(fs, insert_idx, take_idx)
-            take_idx -= 1
-            
-            skip_empty: for {
-                switch t in fs[take_idx] {
-                case Empty:
-                    take_idx -= 1
-                case File:
-                    break skip_empty
+    for take_idx > 0 {
+
+        if bb, bb_ok := fs[take_idx].block_type.(File); bb_ok {
+            for start_index in 0..< take_idx {
+                front := &fs[start_index]
+                back  := &fs[take_idx]
+                if b, ok := front.block_type.(Empty); ok {
+                    if front.size >= back.size {
+                        front.size -= back.size
+                        if front.size == 0 {
+                            front^ = back^
+                            back.block_type = Empty{}
+                        }
+                        else {
+                            // after this call, neither pointers are valid anymore
+                            back_cpy := back^
+                            inject_at(&fs, start_index, back_cpy)
+                            take_idx += 1
+
+                            back  = &fs[take_idx]
+                            back.block_type = Empty{}
+                        }
+                        break
+                    }
                 }
+            }
+        }
+
+        take_idx -= 1
+    }
+
+    chk := checksum(fs[:])
+
+    fmt.println(chk)
+
+    virtual.arena_free_all(&arena)
+}
+
+print :: proc(fs: []Block)
+{
+    b := strings.Builder{}
+    strings.builder_init(&b)
+
+    for f in fs {
+        for i in 0..< f.size {
+            switch fb in f.block_type {
+            case Empty:
+                fmt.sbprint(&b, ".")
+            case File:
+                fmt.sbprintf(&b, "%v", fb.id)
             }
         }
     }
 
-    chk := checksum(fs)
-
-    fmt.println(chk)
+    fmt.println(strings.to_string(b))
 }
 
-parse :: proc(s: []u8) -> []FileBlock
+parse :: proc(s: []u8) -> [dynamic]Block
 {
     isEmpty := false
-    fs := [dynamic]FileBlock{}
-    id : File = 0
+    fs := [dynamic]Block{}
+    id := 0
 
     for c in s {
-        n := c - '0'
+        n := int(c - '0')
 
-        for i in 0..< n {
-
-            if isEmpty {
-                append(&fs, Empty{})
-            }
-            else {
-                append(&fs, id)
-            } 
+        if isEmpty {
+            append(&fs, Block { n, Empty{} })
+        }
+        else {
+            append(&fs, Block { n, File{ id } })
         }
 
         if isEmpty {
@@ -78,18 +113,23 @@ parse :: proc(s: []u8) -> []FileBlock
         }
     }
 
-    return fs[:]
+    return fs
 }
 
-checksum :: proc(fs: []FileBlock) -> int
+checksum :: proc(fs: []Block) -> int
 {
     total := 0
+    idx := 0
 
     for i in 0..< len(fs) {
-        switch n in fs[i] {
+        switch n in fs[i].block_type {
         case Empty:
+            idx += fs[i].size
         case File:
-            total += i * int(n)
+            for j in 0..< fs[i].size {
+                total += idx * int(n.id)
+                idx += 1
+            }
         }
     }
 
