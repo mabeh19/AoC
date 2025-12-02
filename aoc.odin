@@ -1,78 +1,80 @@
 package aoc
 
+import "core:fmt"
 import "core:os"
 import "core:strings"
 import "core:strconv"
 import "core:unicode"
+import "core:c/libc"
+import t "core:time"
 
-
-foreign {
-        strtoll :: proc(cstring, ^cstring, int) -> int ---
-}
 
 
 lines :: proc(str: string) -> []string {
-        return strings.split(str, "\n")
+    return strings.split(str, "\n")
 }
 
 words :: proc(str: string) -> []string {
-        return strings.split(str, " ")
+    return strings.split(str, " ")
 }
 
 get_int :: proc(str: string) -> int {
-        return strconv.atoi(str)
+    i, _ := strconv.parse_int(str)
+    return i
 }
 
 get_f32 :: proc(str: string) -> f32 {
-        return f32(strconv.atof(str))
+    f, _ := strconv.parse_f32(str)
+    return f
 }
 
 words2int :: proc(str: string) -> []int {
-        ints := [dynamic]int{}
-        words := words(str)
-        defer delete(words)
-        for word in words {
-                if len(word) < 1 do continue
-                append(&ints, get_int(word))
-        }
-        return ints[:]
+    ints := [dynamic]int{}
+    words := words(str)
+    defer delete(words)
+    for word in words {
+        if len(word) < 1 do continue
+        append(&ints, get_int(word))
+    }
+    return ints[:]
 }
 
 copy_map :: proc(m: map[$T1]$T2) -> map[T1]T2 {
-        new_map := make(map[T1]T2)
+    new_map := make(map[T1]T2)
 
-        for key, val in m {
-                new_map[key] = val
-        }
+    for key, val in m {
+        new_map[key] = val
+    }
 
-        return new_map
+    return new_map
 }
 
 get_nth_int :: proc(str: string, n: int) -> int { 
-        ptr := str
-        prev_ptr := ""
-        num := 0
-        for _ in 0 ..< n {
-                num, ptr = next_number(ptr)
-                if ptr == prev_ptr {
-                        break
-                }
-                prev_ptr = ptr
+    ptr := str
+    prev_ptr := ""
+    num := 0
+    for _ in 0 ..< n {
+        num, ptr = next_number(ptr)
+        if ptr == prev_ptr {
+            break
         }
-        return num
+        prev_ptr = ptr
+    }
+    return num
 }
 
 next_number :: proc(str: string) -> (number: int, rest_of_string: string) {
-        nptr : cstring
-        i := 0
-        for i = 0; i < len(str); i += 1 {
-                if unicode.is_digit(rune(str[i])) || str[i] == '-' {
-                        break
-                }
+    nptr : [^]libc.char
+    i := 0
+    for i = 0; i < len(str); i += 1 {
+        if unicode.is_digit(rune(str[i])) || str[i] == '-' {
+            break
         }
-        intptr := strings.clone_to_cstring(str[i:])
-        number = strtoll(intptr, &nptr, 10)
-        
-        return number, string(nptr)
+    }
+    intptr := strings.clone_to_cstring(str[i:])
+    number = int(libc.strtoll(intptr, &nptr, 10))
+
+    return number, strings.string_from_null_terminated_ptr(nptr, len(str))
+
 }
 
