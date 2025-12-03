@@ -1,4 +1,4 @@
-package TODAY
+package dayTODAY
 
 import "core:fmt"
 import "core:strings"
@@ -10,11 +10,13 @@ import aoc "../../"
 input : string : #load("input.txt")
 test_input : string : #load("test1.txt")
 
+ParsedInput :: #TODO
+
 TEST1_EXPECTED :: #TODO
 TEST2_EXPECTED :: #TODO
 
 
-parse :: proc(s: string) -> []
+parse :: proc(s: string) -> ParsedInput
 {
 }
 
@@ -36,11 +38,11 @@ main :: proc()
     fmt.println("Part 2:", p2)
 }
 
-part1 :: proc(inp: []Range) -> int
+part1 :: proc(inp: ParsedInput) -> int
 {
 }
 
-part2 :: proc(inp: []Range) -> int
+part2 :: proc(inp: ParsedInput) -> int
 {
 }
 

@@ -66,6 +66,7 @@ part1 :: proc(inp: []Range) -> int
     return sum
 }
 
+
 part2 :: proc(inp: []Range) -> int
 {
     buf := [100]u8{}
@@ -75,11 +76,20 @@ part2 :: proc(inp: []Range) -> int
         for id in range.start ..= range.end {
             idstr := strconv.write_int(buf[:], i64(id), 10)
 
-            for pattern_len in 1 ..= len(idstr) / 2 {
-                if f32(strings.count(idstr, idstr[:pattern_len])) == f32(len(idstr)) / f32(pattern_len) {
-                    sum += id
-                    break
+            pattern_loop:
+            for pattern_len := len(idstr) / 2; pattern_len >= 1; pattern_len -= 1 {
+                if len(idstr) % pattern_len != 0 do continue
+
+                pattern := idstr[:pattern_len]
+
+                for i in pattern_len ..< len(idstr) {
+                    if idstr[i] != pattern[i % pattern_len] {
+                        continue pattern_loop
+                    }
                 }
+
+                sum += id
+                break
             }
         }
     }
