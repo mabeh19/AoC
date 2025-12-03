@@ -20,7 +20,7 @@ parse :: proc(s: string) -> []string
 
 main :: proc()
 {
-    fmt.println("2025 Day 3 - Gift Shop")
+    fmt.println("2025 Day 3 - Lobby")
 
     input_parsed := parse(input)
 
@@ -39,23 +39,35 @@ main :: proc()
 part1 :: proc(inp: []string) -> int
 {
     total := 0
-    for bank in inp {
-        highestInBank := 0
-        for leftCursor in 0 ..< len(bank) {
-            for rightCursor in leftCursor + 1 ..< len(bank) {
-                new_num := []u8{
-                    bank[leftCursor],
-                    bank[rightCursor]
-                }
-                val := aoc.get_int(string(new_num))
 
-                if val > highestInBank {
-                    highestInBank = val
+    NUMS :: 2
+
+    for bank in inp {
+        current_num := 0
+        scores := [NUMS]u8{}
+
+        for i in 0 ..< len(bank) {
+            if bank[i] > scores[current_num] {
+                scores[current_num] = bank[i]
+
+                for &s in scores[current_num + 1:] {
+                    s = 0
                 }
+            }
+            else {
+                for num in current_num + 1 ..< NUMS {
+                    if bank[i] > scores[num] {
+                        scores[num] = bank[i]
+                    }
+                }
+            }
+
+            if i >= len(bank) - (NUMS - current_num) {
+                current_num += 1
             }
         }
 
-        total += highestInBank
+        total += aoc.get_int(string(scores[:]))
     }
 
     return total
@@ -65,52 +77,76 @@ part2 :: proc(inp: []string) -> int
 {
     total := 0
 
-    part2_recurse :: proc(bank: string, buf: []u8, start: int, highest: int, rem: int) -> int {
-        if rem == 0 {
-            val := aoc.get_int(string(buf))
-
-            if val > highest {
-                return val
-            } 
-            else {
-                return highest
-            }
-        }
-
-        visited := make(map[u8]bool)
-        local_highest := highest
-        for i in 0..< len(buf) - start {
-            idx := len(buf) - start - i
-            if bank[idx] in visited {
-                continue
-            }
-
-            buf[idx] = bank[idx]
-
-            visited[bank[idx]] = true
-
-            val := part2_recurse(bank, buf, idx + 1, local_highest, rem - 1)
-
-            if val > local_highest {
-                local_highest = val
-            }
-        }
-
-        return local_highest
-    }
-
-    buf := [12]u8{}
+    NUMS :: 12
 
     for bank in inp {
-        highestInBank := part2_recurse(bank, buf[:], 0, 0, len(buf))
+        current_num := 0
+        scores := [NUMS]u8{}
 
-        total += highestInBank
+        for i in 0 ..< len(bank) {
+            if bank[i] > scores[current_num] {
+                scores[current_num] = bank[i]
+
+                for &s in scores[current_num + 1:] {
+                    s = 0
+                }
+            }
+            else {
+                for num in current_num + 1 ..< NUMS {
+                    if bank[i] > scores[num] {
+                        scores[num] = bank[i]
+
+                        for &s in scores[num + 1:] {
+                            s = 0
+                        }
+
+                        break
+                    }
+                }
+            }
+
+            if i >= len(bank) - (NUMS - current_num) {
+                current_num += 1
+            }
+        }
+
+        total += aoc.get_int(string(scores[:]))
     }
 
     return total
 }
 
 import "core:testing"
+
+@test
+test_simple :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part1(parse("879")), 89)
+}
+
+@test
+test_ex1 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part1(parse("987654321111111")), 98)
+}
+
+@test
+test_ex2 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part1(parse("811111111111119")), 89)
+}
+
+@test
+test_ex3 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part1(parse("234234234234278")), 78)
+}
+
+@test
+test_ex4 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part1(parse("818181911112111")), 92)
+}
 
 @test
 test1 :: proc(t: ^testing.T)
@@ -122,4 +158,29 @@ test1 :: proc(t: ^testing.T)
 test2 :: proc(t: ^testing.T)
 {
     testing.expect_value(t, part2(parse(test_input)), TEST2_EXPECTED)
+}
+
+
+@test
+test_ex21 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part2(parse("987654321111111")), 987654321111)
+}
+
+@test
+test_ex22 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part2(parse("811111111111119")), 811111111119)
+}
+
+@test
+test_ex23 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part2(parse("234234234234278")), 434234234278)
+}
+
+@test
+test_ex24 :: proc(t: ^testing.T)
+{
+    testing.expect_value(t, part2(parse("818181911112111")), 888911112111)
 }

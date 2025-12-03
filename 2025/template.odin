@@ -22,7 +22,7 @@ parse :: proc(s: string) -> ParsedInput
 
 main :: proc()
 {
-    fmt.println("2025 Day TODAY - Gift Shop")
+    fmt.println("2025 Day TODAY - TITLE")
 
     input_parsed := parse(input)
 
