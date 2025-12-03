@@ -36,29 +36,24 @@ main :: proc()
     fmt.println("Part 2:", p2)
 }
 
-part1 :: proc(inp: []string) -> int
+joltage :: proc($NUMS: int, banks: []string) -> int
 {
     total := 0
 
-    NUMS :: 2
-
-    for bank in inp {
+    for bank in banks {
         current_num := 0
         scores := [NUMS]u8{}
 
         for i in 0 ..< len(bank) {
-            if bank[i] > scores[current_num] {
-                scores[current_num] = bank[i]
+            for num in current_num ..< NUMS {
+                if bank[i] > scores[num] {
+                    scores[num] = bank[i]
 
-                for &s in scores[current_num + 1:] {
-                    s = 0
-                }
-            }
-            else {
-                for num in current_num + 1 ..< NUMS {
-                    if bank[i] > scores[num] {
-                        scores[num] = bank[i]
+                    for &s in scores[num + 1:] {
+                        s = 0
                     }
+
+                    break
                 }
             }
 
@@ -73,47 +68,14 @@ part1 :: proc(inp: []string) -> int
     return total
 }
 
+part1 :: proc(inp: []string) -> int
+{
+    return joltage(2, inp)
+}
+
 part2 :: proc(inp: []string) -> int
 {
-    total := 0
-
-    NUMS :: 12
-
-    for bank in inp {
-        current_num := 0
-        scores := [NUMS]u8{}
-
-        for i in 0 ..< len(bank) {
-            if bank[i] > scores[current_num] {
-                scores[current_num] = bank[i]
-
-                for &s in scores[current_num + 1:] {
-                    s = 0
-                }
-            }
-            else {
-                for num in current_num + 1 ..< NUMS {
-                    if bank[i] > scores[num] {
-                        scores[num] = bank[i]
-
-                        for &s in scores[num + 1:] {
-                            s = 0
-                        }
-
-                        break
-                    }
-                }
-            }
-
-            if i >= len(bank) - (NUMS - current_num) {
-                current_num += 1
-            }
-        }
-
-        total += aoc.get_int(string(scores[:]))
-    }
-
-    return total
+    return joltage(12, inp)
 }
 
 import "core:testing"
