@@ -19,7 +19,7 @@ PAPER :: '@'
 
 parse :: proc(s: string) -> ParsedInput
 {
-    return aoc.lines(s)
+    return aoc.lines(strings.clone(s))
 }
 
 main :: proc()
@@ -40,10 +40,8 @@ main :: proc()
     fmt.println("Part 2:", p2)
 }
 
-get_adjacent_paper :: proc(m: []string, point: [2]int) -> [][2]int
+get_adjacent_paper :: proc(m: []string, point: [2]int) -> int
 {
-    @static buf : [8][2]int
-
     num_neighbours := 0
     
     adjacent := [][2]int {
@@ -67,12 +65,11 @@ get_adjacent_paper :: proc(m: []string, point: [2]int) -> [][2]int
         }
 
         if m[n.y][n.x] == PAPER {
-            buf[num_neighbours] = n
             num_neighbours += 1
         }
     }
 
-    return buf[:num_neighbours]
+    return num_neighbours
 }
 
 part1 :: proc(inp: ParsedInput) -> int
@@ -84,7 +81,7 @@ part1 :: proc(inp: ParsedInput) -> int
     for line, y in inp {
         for p, x in line {
             if p == PAPER { 
-                if len(get_adjacent_paper(inp, {x, y})) < LIMIT {
+                if get_adjacent_paper(inp, {x, y}) < LIMIT {
                     accessable += 1
                 }
             }
@@ -99,29 +96,19 @@ part2 :: proc(inp: ParsedInput) -> int
     LIMIT :: 4
 
     accessable := 0
-    marked := map[[2]int]bool{}
     updated := true
 
     for updated {
         updated = false
-        for line, y in inp {
+        for &line, y in inp {
+            lc := transmute([]u8)line
             for p, x in line {
-                if marked[{x,y}] {
-                    continue
-                }
                 if p == PAPER {
                     ns := get_adjacent_paper(inp, {x, y})
 
-                    num_ns := len(ns)
-
-                    for n in ns {
-                        if marked[n] {
-                            num_ns -= 1
-                        }
-                    }
-                    if num_ns < LIMIT {
+                    if ns < LIMIT {
                         accessable += 1
-                        marked[{x,y}] = true
+                        lc[x] = 'x'
                         updated = true
                     }
                 }
