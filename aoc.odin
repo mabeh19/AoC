@@ -18,6 +18,10 @@ words :: proc(str: string) -> []string {
     return strings.split(str, " ")
 }
 
+chunks :: proc(str: string) -> []string {
+    return strings.split(str, "\n\n")
+}
+
 get_int :: proc(str: string) -> int {
     i, _ := strconv.parse_int(str)
     return i
