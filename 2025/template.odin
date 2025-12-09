@@ -10,10 +10,10 @@ import aoc "../../"
 input : string : #load("input.txt")
 test_input : string : #load("test1.txt")
 
-ParsedInput :: #TODO
+ParsedInput :: struct {}
 
-TEST1_EXPECTED :: #TODO
-TEST2_EXPECTED :: #TODO
+TEST1_EXPECTED :: 0
+TEST2_EXPECTED :: 0
 
 
 parse :: proc(s: string) -> ParsedInput
@@ -40,10 +40,12 @@ main :: proc()
 
 part1 :: proc(inp: ParsedInput) -> int
 {
+    return 0
 }
 
 part2 :: proc(inp: ParsedInput) -> int
 {
+    return 0
 }
 
 import "core:testing"

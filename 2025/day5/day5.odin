@@ -38,11 +38,12 @@ parse :: proc(s: string) -> ParsedInput
             high = aoc.get_int(nums[1])
         }
 
-        fixed_r, skip := remove_overlapping(fresh[:], r)
+        fixed_r := adjust_overlapping(fresh[:], r)
 
-        if skip do continue
         append(&fresh, fixed_r)
     }
+
+    remove_equal_ranges(&fresh)
 
     for id in aoc.lines(avail) {
         if id == "" do continue
@@ -55,15 +56,71 @@ parse :: proc(s: string) -> ParsedInput
     }
 }
 
-remove_overlapping :: proc(ranges: []Range, new_range: Range) -> (r: Range, skip: bool)
+inside :: proc(a, b: Range) -> bool
 {
-    r = new_range
-    for range in ranges {
-        // is contained inside other range, skip
-        if range.low <= new_range.low && range.high >= new_range.high {
-            skip = true
-            break
+    lower_inside := false
+    upper_inside := false
+
+    if b.low <= a.low &&
+       b.high >= a.low {
+        lower_inside = true
+    }
+
+    // upper bound is inside other range
+    if b.low <= a.high &&
+       b.high >= a.high {
+        upper_inside = true
+    }
+
+    return lower_inside && upper_inside
+}
+
+remove_equal_ranges :: proc(ranges: ^[dynamic]Range)
+{
+    i := 0
+    for i < len(ranges) {
+        ranges_removed := false
+        r := ranges[i]
+
+        j := 0
+        for j < len(ranges) {
+            if i == j {
+                j += 1
+                continue
+            }
+
+            range := ranges[j]
+
+            if inside(range, r) {
+                // range is inside r, remove range
+                unordered_remove(ranges, j)
+                ranges_removed = true
+                continue
+            }
+            else if inside(r, range) {
+                // r is inside range, remove r
+                unordered_remove(ranges, i)
+                ranges_removed = true
+                continue
+            }
+
+            j += 1
         }
+
+        if ranges_removed {
+            i = 0
+        }
+        else {
+            i += 1
+        }
+    }
+}
+
+adjust_overlapping :: proc(ranges: []Range, new_range: Range) -> Range
+{
+    r := new_range
+
+    for range in ranges {
         // lower bound is inside other range
         if range.low <= new_range.low &&
            range.high >= new_range.low {
@@ -77,7 +134,7 @@ remove_overlapping :: proc(ranges: []Range, new_range: Range) -> (r: Range, skip
         }
     }
 
-    return
+    return r
 }
 
 main :: proc()
@@ -153,5 +210,35 @@ test3 :: proc(t: ^testing.T)
 1
 2`
     EXPECTED :: 1 + 20 - 6
+    testing.expect_value(t, part2(parse(inp)), EXPECTED)
+}
+
+
+@test
+test4 :: proc(t: ^testing.T)
+{
+    inp := 
+`6-13
+13-14
+14-18
+2-20
+
+1
+2`
+    EXPECTED :: 1 + 20 - 2
+    testing.expect_value(t, part2(parse(inp)), EXPECTED)
+}
+
+@test
+test5 :: proc(t: ^testing.T)
+{
+    inp := 
+`7-12
+5-8
+10-14
+
+1
+2`
+    EXPECTED :: 1 + 14 - 5
     testing.expect_value(t, part2(parse(inp)), EXPECTED)
 }
